@@ -1,0 +1,4 @@
+{
+  "description": "Quality hooks for Atwood Machine project",
+  "post_edit": "node -e \"console.log('Validating files...')\""
+}

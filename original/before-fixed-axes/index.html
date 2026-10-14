@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מכונת אטווד · מעבדת מכניקה</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="app-header">
+  <div class="brand"><span class="eyebrow">מעבדת מכניקה / 01</span><h1>מכונת אטווד<span class="title-dot">.</span></h1>
+  <p>שני גופים, חוט אחד. חוקרים תנועה, כוחות ומה קורה כשהחוט נרפה.</p></div>
+  <div class="header-note"><span>פיזיקה בתיכון</span><strong>לראות. לשנות. להבין.</strong></div>
+</header>
+<main>
+<nav class="presets-bar" aria-label="בחירת ניסוי">
+<span class="presets-label">מתחילים בניסוי</span>
+<button class="preset-btn active" data-preset="classic" aria-pressed="true">אטווד קלאסי</button>
+<button class="preset-btn" data-preset="ground_equilibrium" aria-pressed="false">שיווי משקל בקרקע</button>
+<button class="preset-btn" data-preset="ground_impact" aria-pressed="false">פגיעה וחוט רפוי</button>
+<button class="preset-btn" data-preset="liftoff" aria-pressed="false">התרוממות מהקרקע</button>
+<button class="preset-btn" data-preset="equal_velocity" aria-pressed="false">מהירות קבועה</button>
+<button class="preset-btn" data-preset="downward_push" aria-pressed="false">מהירות התחלתית</button>
+</nav>
+<div class="workspace">
+
+<section class="experiment" aria-label="הדמיה ונתונים">
+<div class="section-heading"><h2 id="experimentTitle">אטווד קלאסי</h2><span class="eyebrow">02 / צופים</span></div>
+<div class="sim-toolbar">
+<div class="action-buttons"><button id="btnPlayPause" class="btn-primary">▶ הפעל</button><button id="btnStep">צעד 0.05 s</button><button id="btnReset">איפוס</button></div>
+<label class="speed-control" for="speedSelect">קצב <select id="speedSelect"><option value="1">זמן אמת</option><option value="0.5">×0.5</option><option value="0.2">×0.2</option></select></label>
+<div class="time-readout"><span>זמן</span><bdi id="valTime">0.00 s</bdi></div></div>
+<div class="canvas-container"><canvas id="simCanvas" role="img" aria-label="מכונת אטווד: גוף 1 משמאל, גוף 2 מימין, חוט וגלגלת. גובה נמדד מתחתית הגוף עד הקרקע."></canvas>
+<span class="direction-note">↑ הכיוון החיובי</span></div>
+<div id="valStateBadge" class="status-badge" role="status">חוט מתוח</div>
+<div class="measurement-table"><table><caption>המדידה עכשיו · הכיוון החיובי כלפי מעלה</caption><thead><tr><th>גוף</th><th>גובה <bdi>y [m]</bdi></th><th>מהירות <bdi>v [m/s]</bdi></th><th>תאוצה <bdi>a [m/s²]</bdi></th><th>נורמל <bdi>N [N]</bdi></th></tr></thead>
+<tbody><tr class="row-m1"><th><span class="body-mark m1">1</span></th><td id="valY1"></td><td id="valV1"></td><td id="valA1"></td><td id="valN1"></td></tr>
+<tr class="row-m2"><th><span class="body-mark m2">2</span></th><td id="valY2"></td><td id="valV2"></td><td id="valA2"></td><td id="valN2"></td></tr></tbody></table>
+<div class="tension-readout"><span>מתיחות החוט <bdi>T</bdi></span><bdi id="valT">15.00 N</bdi></div></div>
+<div class="learning-note"><span class="eyebrow">מה רואים כאן?</span><p id="stateExplanation"></p></div>
+</section>
+<section class="graphs-section" aria-label="גרפים של הניסוי">
+<div class="section-heading"><h2>התנועה לאורך הזמן</h2><span class="eyebrow">03 / משווים</span></div>
+<div class="graphs-header"><div class="graph-tabs" role="group" aria-label="סוג הגרף">
+<button id="tabAll" class="tab-btn active" aria-pressed="true">כל הגרפים</button><button id="tabPos" class="tab-btn" aria-pressed="false">גובה</button><button id="tabVel" class="tab-btn" aria-pressed="false">מהירות</button><button id="tabForce" class="tab-btn" aria-pressed="false">כוחות</button></div>
+<button id="btnExportCSV">ייצוא מדידות CSV ↓</button></div>
+<p class="hint">הגרפים נבנים תוך כדי התנועה. הנקודות מסמנות את הרגע הנוכחי; מוצגות 20 השניות האחרונות.</p>
+<div class="graph-canvas-container"><canvas id="graphCanvas" role="img" aria-label="גרפי גובה, מהירות ומתיחות ונורמל של שני הגופים כתלות בזמן"></canvas></div>
+</section>
+<aside class="controls-sidebar" aria-label="הגדרות הניסוי">
+<div class="section-heading"><h2>תנאי התחלה</h2><span class="eyebrow">01 / משנים</span></div>
+<p class="hint">שינוי ערך משהה את הניסוי ומתחיל מדידה חדשה.</p>
+<div class="settings-grid">
+<section class="settings-group" aria-label="מסות"><div class="control-group"><div class="control-header"><label for="inputM1"><span class="body-mark m1">1</span> מסת גוף 1</label>
+<div class="control-input-wrap"><input id="inputM1" type="number" min="0.1" max="20" step="0.1" value="3"><span>kg</span></div></div>
+<input aria-label="מסת גוף 1" id="sliderM1" type="range" min="0.1" max="20" step="0.1" value="3"></div>
+<div class="control-group"><div class="control-header"><label for="inputM2"><span class="body-mark m2">2</span> מסת גוף 2</label>
+<div class="control-input-wrap"><input id="inputM2" type="number" min="0.1" max="20" step="0.1" value="1"><span>kg</span></div></div>
+<input aria-label="מסת גוף 2" id="sliderM2" type="range" min="0.1" max="20" step="0.1" value="1"></div>
+</section>
+<section class="settings-group" aria-label="מיקום ומהירות"><div class="control-group"><div class="control-header"><label for="inputY1">גובה התחלתי של גוף 1</label>
+<div class="control-input-wrap"><input id="inputY1" type="number" min="0" max="6" step="0.1" value="3"><span>m</span></div></div>
+<input aria-label="גובה התחלתי גוף 1" id="sliderY1" type="range" min="0" max="6" step="0.1" value="3">
+<p class="hint">גובה גוף 2: <bdi id="initY2Label">3.0 m</bdi> · נקבע לפי אורך החוט.</p></div>
+<div class="ground-actions"><button id="btnGround1">גוף 1 על הקרקע</button><button id="btnGround2">גוף 2 על הקרקע</button></div>
+<div class="control-group"><div class="control-header"><label for="inputV1">מהירות התחלתית של גוף 1</label>
+<div class="control-input-wrap"><input id="inputV1" type="number" min="-10" max="10" step="0.5" value="0"><span>m/s</span></div></div>
+<input aria-label="מהירות התחלתית גוף 1" id="sliderV1" type="range" min="-10" max="10" step="0.5" value="0">
+<p class="hint">חיובי ↑ מעלה · שלילי ↓ מטה. בחוט מתוח: <bdi>v₂ = −v₁</bdi>.</p></div>
+</section>
+<section class="settings-group" aria-label="כבידה ותצוגה"><div class="control-group"><div class="control-header"><label for="inputG">תאוצת הכובד <bdi>g</bdi></label>
+<div class="control-input-wrap"><input id="inputG" type="number" min="0" max="25" step="0.1" value="10"><span>m/s²</span></div></div>
+<input aria-label="תאוצת הכובד" id="sliderG" type="range" min="0" max="25" step="0.1" value="10">
+<div class="quick-buttons"><button id="btnG10">g = 10</button><button id="btnG98">g = 9.8</button></div></div>
+<div class="display-options"><label><input id="toggleFBD" type="checkbox" checked> תרשימי כוחות</label>
+<label><input id="toggleRuler" type="checkbox" checked> סרגל גובה</label></div>
+</section>
+</div>
+<p id="configNotice" class="notice" role="status" hidden></p>
+</aside>
+</div>
+<details id="theorySection" class="theory-section"><summary>המודל והמשוואות · לקריאה עם התלמידים</summary>
+<div class="theory-content"><div><h3>כשהחוט מתוח ושני הגופים באוויר</h3><p>הכיוון החיובי מעלה לשני הגופים. התאוצות מנוגדות, גם כשהמהירות רגעית אפס.</p>
+<div id="formulaBoxA" class="formula"></div><div id="formulaBoxT" class="formula"></div></div>
+<div><h3>קרקע, חוט רפוי ומתקף</h3><p>גוף נח על הקרקע: <bdi>N + T − mg = 0</bdi>. בחוט רפוי: <bdi>T = 0</bdi>, ובאוויר <bdi>a = −g</bdi>. פגיעה בקרקע ומתיחת חוט מחדש מטופלות כאירועים לא אלסטיים; האנרגיה המכנית אינה נשמרת בהם. הגרפים מציגים כוחות רגילים לפני ואחרי האירוע; המתקף הרגעי אינו מוצג כשיא כוח סופי.</p>
+<p>המודל משתמש בגלגלת ובחוט חסרי מסה וללא חיכוך. גובה נמדד מתחתית הגוף; גדלי הגופים והחיצים הם להמחשה. הגלגלת בגובה 8 m, וסכום הגבהים בחוט מתוח הוא 6 m. אורך 10 m מתייחס לקטעים האנכיים, ללא הקשת הקבועה סביב הגלגלת. בגבול העליון, 7.3 m, הניסוי נעצר.</p></div></div>
+</details>
+<footer>מעבדת מכניקה <span>רווח — הפעל/השהה · S — צעד · R — איפוס</span></footer>
+</main>
+<script src="physics.js"></script><script src="renderer.js"></script><script src="charts.js"></script><script src="app.js"></script>
+</body></html>

@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "width": 1366,
+      "controlsBottom": 1220.390625,
+      "measurementsTop": 1248.390625,
+      "below": true,
+      "overflow": false,
+      "uniqueIds": true,
+      "y1": "2.84",
+      "v1": "-1.25"
+    },
+    {
+      "width": 390,
+      "controlsBottom": 2578.59375,
+      "measurementsTop": 2598.59375,
+      "below": true,
+      "overflow": false,
+      "uniqueIds": true,
+      "y1": "2.84",
+      "v1": "-1.25"
+    }
+  ],
+  "errors": []
+}

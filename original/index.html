@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>סימולציית מכונת אטווד | פיזיקה תיכונית</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- KaTeX for formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-icon">⚙️</span>
+        <div class="brand-text">
+          <h1>סימולטור מכונת אטווד (Atwood Machine)</h1>
+          <p>הדמיה אינטראקטיבית להוראת מכניקה: חוט רפוי, גוף על הקרקע, מהירות התחלתית ותרשימי כוחות</p>
+        </div>
+      </div>
+
+      <!-- Quick Presets & Theme in Header -->
+      <div class="header-actions">
+        <div class="presets-bar">
+          <span class="presets-label">🎓 תרחישי בגרות:</span>
+          <button class="preset-btn active" data-preset="classic" title="שני הגופים באוויר בתנועה מואצת">
+            <span>🔄</span> אטווד קלאסי
+          </button>
+          <button class="preset-btn" data-preset="ground_equilibrium" title="גוף מונח על הקרקע בשיווי משקל סטטי">
+            <span>⚖️</span> שיווי משקל (נורמל)
+          </button>
+          <button class="preset-btn" data-preset="ground_impact" title="גוף פוגע בקרקע, החוט נרפה והשני מזנק מעלה">
+            <span>💥</span> פגיעה בקרקע וחוט רפוי
+          </button>
+          <button class="preset-btn" data-preset="liftoff" title="גוף כבד באוויר מושך גוף קל מהקרקע">
+            <span>🚀</span> התרוממות מהקרקע
+          </button>
+          <button class="preset-btn" data-preset="equal_velocity" title="מסות שוות במהירות קבועה (a=0)">
+            <span>➡️</span> מהירות קצובה
+          </button>
+          <button class="preset-btn" data-preset="downward_push" title="הענקת מהירות התחלתית כלפי מטה">
+            <span>⬇️</span> זריקה מטה
+          </button>
+        </div>
+
+        <button id="btnThemeToggle" class="btn-theme-toggle" title="החלף עיצוב בהיר / כהה">
+          <span id="themeIcon">☀️</span> <span id="themeText">עיצוב בהיר</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-layout">
+    
+    <!-- Left Sidebar: Controls & Settings -->
+    <aside class="controls-sidebar">
+
+      <!-- Primary Actions Card -->
+      <section class="card">
+        <div class="card-title">
+          <span>🎮</span> שליטה ובקרה
+        </div>
+
+        <div class="action-buttons">
+          <button id="btnPlayPause" class="btn btn-primary" title="מקש רווח">
+            <span class="icon">▶️</span> הפעל
+          </button>
+          <button id="btnStep" class="btn btn-secondary" title="מקש S">
+            <span class="icon">⏭️</span> צעד
+          </button>
+          <button id="btnReset" class="btn btn-secondary" title="מקש R">
+            <span class="icon">🔄</span> איפוס
+          </button>
+        </div>
+
+        <div class="speed-control">
+          <span>מהירות סימולציה:</span>
+          <select id="speedSelect" class="select-input">
+            <option value="1.0">1.0x (זמן אמת)</option>
+            <option value="0.5">0.5x (הילוך איטי)</option>
+            <option value="0.2">0.2x (הילוך איטי מאוד)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Masses Card -->
+      <section class="card">
+        <div class="card-title">
+          <span>⚖️</span> הגדרת מסות
+        </div>
+
+        <!-- Mass 1 -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label" for="inputM1">
+              <span style="color: var(--color-m1)">●</span> מסה 1 (\(m_1\)):
+            </label>
+            <div class="control-input-wrap">
+              <input type="number" id="inputM1" class="number-input" min="0.1" max="20" step="0.5" value="3.0">
+              <span class="unit-label">ק"ג</span>
+            </div>
+          </div>
+          <input type="range" id="sliderM1" class="slider-input slider-m1" min="0.1" max="10" step="0.1" value="3.0">
+        </div>
+
+        <!-- Mass 2 -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label" for="inputM2">
+              <span style="color: var(--color-m2)">●</span> מסה 2 (\(m_2\)):
+            </label>
+            <div class="control-input-wrap">
+              <input type="number" id="inputM2" class="number-input" min="0.1" max="20" step="0.5" value="1.0">
+              <span class="unit-label">ק"ג</span>
+            </div>
+          </div>
+          <input type="range" id="sliderM2" class="slider-input slider-m2" min="0.1" max="10" step="0.1" value="1.0">
+        </div>
+
+        <!-- Gravity -->
+        <div class="control-group" style="margin-top: 1rem;">
+          <div class="control-header">
+            <label class="control-label" for="inputG">
+              <span>🌍</span> תאוצת כובד (\(g\)):
+            </label>
+            <div class="control-input-wrap">
+              <input type="number" id="inputG" class="number-input" min="0" max="25" step="0.1" value="10.0">
+              <span class="unit-label">מ'/שנ"ר</span>
+            </div>
+          </div>
+          <input type="range" id="sliderG" class="slider-input" min="0" max="20" step="0.1" value="10.0">
+          <div class="quick-buttons">
+            <button id="btnG10" class="btn-mini">10.0 מ'/שנ"ר (בגרות)</button>
+            <button id="btnG98" class="btn-mini">9.8 מ'/שנ"ר (מדויק)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Position, Ground & Velocity Card -->
+      <section class="card">
+        <div class="card-title">
+          <span>📍</span> מיקום, קרקע ומהירות
+        </div>
+
+        <!-- Ground buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <button id="btnGround1" class="btn btn-ground" title="קבע שגוף 1 מונח על הקרקע">
+            הנח גוף 1 על קרקע
+          </button>
+          <button id="btnGround2" class="btn btn-ground" title="קבע שגוף 2 מונח על הקרקע">
+            הנח גוף 2 על קרקע
+          </button>
+        </div>
+
+        <!-- Height y1 -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label" for="inputY1">
+              גובה התחלתי גוף 1 (\(y_{1,0}\)):
+            </label>
+            <div class="control-input-wrap">
+              <input type="number" id="inputY1" class="number-input" min="0" max="6" step="0.1" value="2.0">
+              <span class="unit-label">מטר</span>
+            </div>
+          </div>
+          <input type="range" id="sliderY1" class="slider-input" min="0" max="6" step="0.1" value="2.0">
+        </div>
+
+        <!-- Initial Velocity v1 -->
+        <div class="control-group">
+          <div class="control-header">
+            <label class="control-label" for="inputV1">
+              מהירות התחלתית גוף 1 (\(v_{1,0}\)):
+            </label>
+            <div class="control-input-wrap">
+              <input type="number" id="inputV1" class="number-input" min="-10" max="10" step="0.5" value="0.0">
+              <span class="unit-label">מ'/שנ'</span>
+            </div>
+          </div>
+          <input type="range" id="sliderV1" class="slider-input" min="-8" max="8" step="0.5" value="0.0">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+            (+) כלפי מעלה | (-) כלפי מטה
+          </div>
+        </div>
+      </section>
+
+      <!-- Visual Display Options Card -->
+      <section class="card">
+        <div class="card-title">
+          <span>👁️</span> תצוגה והמחשה
+        </div>
+
+        <div class="toggle-row">
+          <span>תרשים כוחות חופשי (FBD) עם חיצים:</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleFBD" checked>
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <span>סרגל גובה במטרים:</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleRuler" checked>
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Theory Formula Card -->
+      <section class="card" id="theorySection">
+        <div class="card-title">
+          <span>📐</span> נוסחאות תיאורטיות (מצב אידיאלי באוויר)
+        </div>
+        <div class="theory-box">
+          <div class="theory-line" id="formulaBoxA">
+            \( a = \frac{m_1 - m_2}{m_1 + m_2} g \)
+          </div>
+          <div class="theory-line" id="formulaBoxT">
+            \( T = \frac{2 m_1 m_2}{m_1 + m_2} g \)
+          </div>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- Right Content Area: Visualizer & Graphs -->
+    <section class="content-area">
+
+      <!-- Simulation View -->
+      <div class="sim-section">
+        <div class="canvas-container">
+          <canvas id="simCanvas"></canvas>
+        </div>
+
+        <!-- Status Badge -->
+        <div id="valStateBadge" class="status-badge status-taut">
+          🔄 תנועה מואצת (חוט מתוח)
+        </div>
+
+        <!-- Live Readouts Grid -->
+        <div class="readout-grid">
+          <div class="readout-card">
+            <div class="readout-label">זמן ריצה (\(t\))</div>
+            <div id="valTime" class="readout-value">0.00 s</div>
+          </div>
+          <div class="readout-card card-m1">
+            <div class="readout-label">גובה \(y_1\)</div>
+            <div id="valY1" class="readout-value">2.00 m</div>
+          </div>
+          <div class="readout-card card-m2">
+            <div class="readout-label">גובה \(y_2\)</div>
+            <div id="valY2" class="readout-value">4.00 m</div>
+          </div>
+          <div class="readout-card card-m1">
+            <div class="readout-label">מהירות \(v_1\)</div>
+            <div id="valV1" class="readout-value">0.00 m/s</div>
+          </div>
+          <div class="readout-card card-m2">
+            <div class="readout-label">מהירות \(v_2\)</div>
+            <div id="valV2" class="readout-value">0.00 m/s</div>
+          </div>
+          <div class="readout-card card-m1">
+            <div class="readout-label">תאוצה \(a_1\)</div>
+            <div id="valA1" class="readout-value">-5.00 m/s²</div>
+          </div>
+          <div class="readout-card card-m2">
+            <div class="readout-label">תאוצה \(a_2\)</div>
+            <div id="valA2" class="readout-value">5.00 m/s²</div>
+          </div>
+          <div class="readout-card card-forces">
+            <div class="readout-label">מתיחות (\(T\))</div>
+            <div id="valT" class="readout-value">15.0 N</div>
+          </div>
+          <div class="readout-card">
+            <div class="readout-label">נורמל 1 (\(N_1\))</div>
+            <div id="valN1" class="readout-value">0.0 N</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphs Section -->
+      <div class="graphs-section">
+        <div class="graphs-header">
+          <div class="graph-tabs">
+            <button id="tabAll" class="tab-btn active">כל הגרפים (מפוצל)</button>
+            <button id="tabPos" class="tab-btn">מיקום - זמן \(y(t)\)</button>
+            <button id="tabVel" class="tab-btn">מהירות - זמן \(v(t)\)</button>
+            <button id="tabForce" class="tab-btn">כוחות - זמן \(T(t), N(t)\)</button>
+          </div>
+
+          <button id="btnExportCSV" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+            <span>📥</span> ייצוא נתונים (CSV)
+          </button>
+        </div>
+
+        <div class="graph-canvas-container">
+          <canvas id="graphCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Explanatory Educational Notes -->
+      <section class="card" style="margin-top: 0.25rem;">
+        <div class="card-title">
+          <span>💡</span> דגשים פדגוגיים להוראה בכיתה
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">
+          <p>• <strong>גוף מונח על הקרקע:</strong> כאשר גוף כבד יותר מונח על הקרקע (\(m_1 > m_2\)), המערכת לא מאיצה. כוח הנורמל אינו שווה ל-\(m_1 g\) אלא פוחת בשיעור המתיחות: \(N_1 = m_1 g - T = (m_1 - m_2)g\).</p>
+          <p>• <strong>פגיעה בקרקע וחוט רפוי:</strong> בעת שגוף 1 פוגע בקרקע הוא נעצר, המתיחות מתאפסת מיד (\(T = 0\)), וגוף 2 ממשיך לנוע מעלה בזריקה אנכית חופשית בתאוצה \(a_2 = -g = -10\text{ m/s}^2\) עד לשיא הגובה!</p>
+          <p>• <strong>בחינת שיפוע גרף מהירות-זמן:</strong> שים לב לשינוי החד בשיפוע של \(v_2(t)\) ברגע הפגיעה בקרקע – השיפוע קופץ מ-\(a\) ל-\(-g\), בדיוק כפי שנשאל בבחינות הבגרות.</p>
+        </div>
+      </section>
+
+      <!-- Keyboard shortcuts hint -->
+      <footer class="footer-hint">
+        מקשי קיצור: <span class="kbd">רווח</span> הפעל/השהה | <span class="kbd">S</span> צעד קדימה | <span class="kbd">R</span> איפוס סימולציה
+      </footer>
+
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="physics.js"></script>
+  <script src="renderer.js"></script>
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    // KaTeX auto-render fallback if loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\[', right: '\\]', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false}
+          ]
+        });
+      }
+    });
+  </script>
+</body>
+</html>

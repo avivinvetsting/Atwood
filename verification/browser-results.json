@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-13",
+  "browser": "Chrome",
+  "checks": [
+    "Initial analytic values, signs and warm background",
+    "All six presets reset and select the right title",
+    "Ground equilibria and both normal readouts",
+    "Ground impact changes tension to zero and retains upward speed",
+    "Initial upward velocity on ground is preserved",
+    "Zero gravity and matching range limits",
+    "Playing, pause on parameter edit, step, reset and keyboard",
+    "CSV download has initial sample, acceleration and N2",
+    "Graphs, toggles, formulas and full projectile peak",
+    "No overflow at 320, 390, 768, 1024 and 1440 pixels",
+    "No JavaScript errors and no network dependencies"
+  ],
+  "errors": [],
+  "limitation": "Browser download event and CSV bytes verified. Chrome canceled saving the download in the test environment; OS download persistence not verified."
+}
