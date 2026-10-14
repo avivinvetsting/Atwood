@@ -56,4 +56,15 @@ test('Replay lookup returns the nearest recorded sample',()=>{
  assert.equal(charts.dataPoints[charts.indexAt(.503)].t.toFixed(2),'0.50');
  assert.ok(Number.isFinite(charts.dataPoints[0].angle)&&typeof charts.dataPoints[0].state==='string');
 });
+test('Hidden force series are not plotted; ranges stay fixed',()=>{
+ const c=canvas(600,510),charts=new AtwoodCharts(c),s=new AtwoodSimulation({m1:3,m2:1,initY1:3});
+ charts.setPlan({duration:4,ranges:{pos:{min:0,max:8},vel:{min:-6,max:6},force:{min:0,max:32}}});
+ charts.record(0,s);s.step(.1);charts.record(s.time,s);
+ const dots=()=>{c.calls.length=0;charts.draw();return c.calls.filter(a=>a[0]==='arc').length;};
+ assert.equal(dots(),7);
+ charts.setSeriesVisible('N1',false);charts.setSeriesVisible('N2',false);assert.equal(dots(),5);
+ charts.setActiveTab('force');assert.equal(dots(),1);
+ charts.setSeriesVisible('N1',true);assert.equal(dots(),2);
+ assert.deepEqual(charts.ranges.force,{min:0,max:32});
+});
 console.log(passed+' canvas and CSV tests passed.');

@@ -29,7 +29,6 @@
   .graph-tabs button{padding:7px 10px;font-size:12px}
   #btnExportCSV{padding:7px 9px}
   .graph-canvas-container{height:clamp(360px,calc(100dvh - 410px),510px)}
-  .graphs-section>.hint{margin:9px 0 12px}
   .measurement-table{flex-wrap:wrap;gap:10px;margin-top:12px}
   .tension-readout{flex:auto;border:0;padding:0;display:flex;align-items:center;gap:12px;text-align:right}
   .tension-readout bdi{margin:0;font-size:20px}
@@ -47,8 +46,10 @@
   h1{font-size:34px;margin:4px 0 6px}
   .brand p{font-size:13px}
   main{padding-top:14px}
-  .presets-bar{margin-bottom:18px}
-  .section-heading{margin-bottom:10px}
+  .presets-bar{margin-bottom:14px}
+  .section-heading{margin-bottom:8px}
+  .graph-subbar{margin:4px 0 6px}
+  .graph-canvas-container{height:clamp(280px,calc(100dvh - 380px),440px)}
 }
 @media (max-width:760px){
   .graphs-section{order:2;min-width:0;width:100%;margin-top:14px}
@@ -84,11 +85,13 @@
 }
 
 @media(min-width:761px){
-  .graph-canvas-container{height:clamp(390px,calc(100dvh - 350px),520px)}
+  .graph-canvas-container{height:clamp(300px,calc(100dvh - 410px),490px)}
 }
 
-@media(min-width:761px) and (max-width:850px){
-  .graph-canvas-container{height:clamp(360px,calc(100dvh - 410px),520px)}
+@media(min-width:761px) and (max-width:1050px){
+  .graph-actions button{padding:6px 9px;font-size:12px;min-height:34px}
+  .graph-tabs button{padding:6px 8px;font-size:12px}
+  .series-btn{padding:2px 7px;font-size:11px}
 }
 
 
@@ -113,6 +116,20 @@
 .replay-bar button{font-size:12px;min-height:30px;padding:3px 10px;flex-shrink:0}
 .replay-hint{flex-shrink:0}
 @media(max-width:1150px){.replay-hint{display:none}}
+
+/* Graph controls: force toggles and full-window graphs. */
+.graph-actions{display:flex;gap:6px}
+.graph-subbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;margin:6px 0 10px}
+.graph-subbar .hint{margin:0}
+.series-toggles{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.series-toggles[hidden]{display:none}
+.series-btn{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:2px 10px;font-size:12px}
+.series-btn i{display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--c)}
+.series-btn[aria-pressed=false]{background:var(--surface);border-color:var(--line);color:var(--muted);text-decoration:line-through;opacity:.65}
+.series-btn[aria-pressed=false] i{background:#c9c6b8}
+body.graphs-open{overflow:hidden}
+.graphs-section.expanded{position:fixed;inset:0;z-index:50;margin:0;padding:16px 24px;border:0;background:var(--paper);display:flex;flex-direction:column}
+.graphs-section.expanded .graph-canvas-container{flex:1;min-height:0;height:auto}
 
 </style></head>
 <body>
@@ -150,8 +167,9 @@
 <div class="section-heading"><h2>התנועה לאורך הזמן</h2><span class="eyebrow">03 / משווים</span></div>
 <div class="graphs-header"><div class="graph-tabs" role="group" aria-label="סוג הגרף">
 <button id="tabAll" class="tab-btn active" aria-pressed="true">כל הגרפים</button><button id="tabPos" class="tab-btn" aria-pressed="false">גובה</button><button id="tabVel" class="tab-btn" aria-pressed="false">מהירות</button><button id="tabForce" class="tab-btn" aria-pressed="false">כוחות</button></div>
-<button id="btnExportCSV">ייצוא מדידות CSV ↓</button></div>
-<p class="hint" id="graphPlanNote">ציר הזמן נקבע מראש לפי תנאי הניסוי ונשאר קבוע.</p>
+<div class="graph-actions"><button id="btnExpand" aria-pressed="false" title="הגדלת הגרפים לכל החלון · רווח — הפעל/השהה · Esc — סגירה">⛶ הגדלה</button><button id="btnExportCSV">ייצוא CSV ↓</button></div></div>
+<div class="graph-subbar"><p class="hint" id="graphPlanNote">ציר הזמן נקבע מראש לפי תנאי הניסוי ונשאר קבוע.</p>
+<div id="forceToggles" class="series-toggles" role="group" aria-label="כוחות שמוצגים בגרף"><span>כוחות:</span><button class="series-btn" data-series="T" aria-pressed="true"><i style="--c:#397668"></i>T</button><button class="series-btn" data-series="N1" aria-pressed="true"><i style="--c:#75602e"></i>N₁</button><button class="series-btn" data-series="N2" aria-pressed="true"><i style="--c:#a05276"></i>N₂</button></div></div>
 <div class="graph-canvas-container"><canvas id="graphCanvas" role="img" aria-label="גרפי גובה, מהירות ומתיחות ונורמל של שני הגופים כתלות בזמן"></canvas></div>
 </section>
 <aside class="controls-sidebar" aria-label="הגדרות הניסוי">
@@ -458,7 +476,7 @@ function niceStep(span,count){const raw=span/count,p=10**Math.floor(Math.log10(r
 function niceAxis(min,max,count=4){if(!(max>min))max=min+1;const step=niceStep(max-min,count);return {min:Math.floor(min/step+1e-9)*step,max:Math.ceil(max/step-1e-9)*step,step};}
 function formatTick(v,step){let d=0;while(d<4&&Math.abs(Math.round(step*10**d)-step*10**d)>1e-6)d++;return String(Number(v.toFixed(d)));}
 class AtwoodCharts{
- constructor(canvas,o={}){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.dataPoints=[];this.activeTab='all';this.theme=o.theme||'light';this.timeDomain={min:0,max:5};this.ranges=null;this.cursorIndex=null;this.resize();}
+ constructor(canvas,o={}){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.dataPoints=[];this.activeTab='all';this.theme=o.theme||'light';this.timeDomain={min:0,max:5};this.ranges=null;this.cursorIndex=null;this.hiddenSeries=new Set();this.resize();}
  setTheme(t){this.theme=t;this.draw();}
  resize(){const r=this.canvas.getBoundingClientRect(),d=typeof window==='undefined'?1:window.devicePixelRatio||1;this.width=r.width||600;this.height=r.height||510;this.canvas.width=this.width*d;this.canvas.height=this.height*d;this.ctx.setTransform(d,0,0,d,0,0);}
  setPlan(plan){this.timeDomain={min:0,max:plan.duration};this.ranges=plan.ranges;}
@@ -466,6 +484,8 @@ class AtwoodCharts{
  record(time,s){this.dataPoints.push({t:time,y1:s.y1,y2:s.y2,v1:s.v1,v2:s.v2,a1:s.a1??0,a2:s.a2??0,T:s.T,N1:s.N1,N2:s.N2??0,isSlack:s.isSlack,angle:s.pulleyAngle,stateType:s.stateType,state:s.stateDescription});}
  /* Replay: index of a recorded sample to highlight, or null to follow the latest sample. */
  setCursor(index){this.cursorIndex=index;}
+ /* Show or hide one plotted series (e.g. 'T', 'N1'); axes stay fixed. */
+ setSeriesVisible(key,visible){if(visible)this.hiddenSeries.delete(key);else this.hiddenSeries.add(key);}
  /* Index of the recorded sample closest to time t (samples are time-ordered). */
  indexAt(t){
    const d=this.dataPoints;if(!d.length)return null;
@@ -495,8 +515,9 @@ class AtwoodCharts{
      this.text(cfg.title,w-18,top+19,'#293e37','right',13);
      let lx=18;
      cfg.series.forEach(([k,label,color],i)=>{
-       this.line(lx,top+19,lx+13,top+19,color,2);
-       this.text(label,lx+18,top+19,color,'left',12);lx+=key==='force'?57:78;
+       const shown=!this.hiddenSeries.has(k),tint=shown?color:'#c9c6b8';
+       this.line(lx,top+19,lx+13,top+19,tint,2);
+       this.text(label,lx+18,top+19,tint,'left',12);lx+=key==='force'?57:78;
      });
      const x=52,y=top+42,pw=w-76,ph=slot-75;
      let minY=0,maxY=1;
@@ -518,6 +539,7 @@ class AtwoodCharts{
      c.save();c.beginPath();c.rect(x-4,y-4,pw+8,ph+8);c.clip();
      if(data.length>1){c.setLineDash([3,4]);this.line(sx(cursor.t),y,sx(cursor.t),y+ph,'#a7aa98');c.setLineDash([]);}
      cfg.series.forEach(([key,label,color],i)=>{
+       if(this.hiddenSeries.has(key))return;
        c.strokeStyle=color;c.lineWidth=2;c.setLineDash(i===1?[5,3]:i===2?[2,3]:[]);
        c.beginPath();data.forEach((p,j)=>{if(j)c.lineTo(sx(p.t),sy(p[key]));else c.moveTo(sx(p.t),sy(p[key]));});c.stroke();
        if(data.length){c.beginPath();c.arc(sx(cursor.t),sy(cursor[key]),3.5,0,Math.PI*2);c.fillStyle=color;c.fill();}
@@ -650,13 +672,25 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('tab'+id).addEventListener('click',()=>{
    for(const b of document.querySelectorAll('.tab-btn')){const active=b.id==='tab'+id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
    charts.setActiveTab(key);
+   $('forceToggles').hidden=key==='pos'||key==='vel';
   });
  }
+ for(const b of document.querySelectorAll('.series-btn'))b.addEventListener('click',()=>{
+  const visible=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',String(visible));charts.setSeriesVisible(b.dataset.series,visible);charts.draw();
+ });
+ const graphsSection=document.querySelector('.graphs-section');
+ function expandGraphs(on){
+  graphsSection.classList.toggle('expanded',on);document.body.classList.toggle('graphs-open',on);
+  $('btnExpand').setAttribute('aria-pressed',String(on));$('btnExpand').textContent=on?'✕ סגירה':'⛶ הגדלה';
+ }
+ $('btnExpand').addEventListener('click',()=>{expandGraphs(!graphsSection.classList.contains('expanded'));$('btnExpand').blur();});
  $('btnExportCSV').addEventListener('click',()=>{
   const url=URL.createObjectURL(new Blob(['﻿'+charts.exportCSV()],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
   a.href=url;a.download='atwood-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  });
  window.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&graphsSection.classList.contains('expanded')){expandGraphs(false);return;}
   if(e.target.closest('input,select,textarea,button,summary')||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
   if(e.code==='Space'){e.preventDefault();play(!running);}
   else if(e.code==='KeyR')$('btnReset').click();

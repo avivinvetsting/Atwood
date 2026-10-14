@@ -25,7 +25,6 @@
   .graph-tabs button{padding:7px 10px;font-size:12px}
   #btnExportCSV{padding:7px 9px}
   .graph-canvas-container{height:clamp(360px,calc(100dvh - 410px),510px)}
-  .graphs-section>.hint{margin:9px 0 12px}
   .measurement-table{flex-wrap:wrap;gap:10px;margin-top:12px}
   .tension-readout{flex:auto;border:0;padding:0;display:flex;align-items:center;gap:12px;text-align:right}
   .tension-readout bdi{margin:0;font-size:20px}
@@ -43,8 +42,10 @@
   h1{font-size:34px;margin:4px 0 6px}
   .brand p{font-size:13px}
   main{padding-top:14px}
-  .presets-bar{margin-bottom:18px}
-  .section-heading{margin-bottom:10px}
+  .presets-bar{margin-bottom:14px}
+  .section-heading{margin-bottom:8px}
+  .graph-subbar{margin:4px 0 6px}
+  .graph-canvas-container{height:clamp(280px,calc(100dvh - 380px),440px)}
 }
 @media (max-width:760px){
   .graphs-section{order:2;min-width:0;width:100%;margin-top:14px}
@@ -80,11 +81,13 @@
 }
 
 @media(min-width:761px){
-  .graph-canvas-container{height:clamp(390px,calc(100dvh - 350px),520px)}
+  .graph-canvas-container{height:clamp(300px,calc(100dvh - 410px),490px)}
 }
 
-@media(min-width:761px) and (max-width:850px){
-  .graph-canvas-container{height:clamp(360px,calc(100dvh - 410px),520px)}
+@media(min-width:761px) and (max-width:1050px){
+  .graph-actions button{padding:6px 9px;font-size:12px;min-height:34px}
+  .graph-tabs button{padding:6px 8px;font-size:12px}
+  .series-btn{padding:2px 7px;font-size:11px}
 }
 
 
@@ -109,3 +112,17 @@
 .replay-bar button{font-size:12px;min-height:30px;padding:3px 10px;flex-shrink:0}
 .replay-hint{flex-shrink:0}
 @media(max-width:1150px){.replay-hint{display:none}}
+
+/* Graph controls: force toggles and full-window graphs. */
+.graph-actions{display:flex;gap:6px}
+.graph-subbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;margin:6px 0 10px}
+.graph-subbar .hint{margin:0}
+.series-toggles{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.series-toggles[hidden]{display:none}
+.series-btn{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:2px 10px;font-size:12px}
+.series-btn i{display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--c)}
+.series-btn[aria-pressed=false]{background:var(--surface);border-color:var(--line);color:var(--muted);text-decoration:line-through;opacity:.65}
+.series-btn[aria-pressed=false] i{background:#c9c6b8}
+body.graphs-open{overflow:hidden}
+.graphs-section.expanded{position:fixed;inset:0;z-index:50;margin:0;padding:16px 24px;border:0;background:var(--paper);display:flex;flex-direction:column}
+.graphs-section.expanded .graph-canvas-container{flex:1;min-height:0;height:auto}

@@ -117,13 +117,25 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('tab'+id).addEventListener('click',()=>{
    for(const b of document.querySelectorAll('.tab-btn')){const active=b.id==='tab'+id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
    charts.setActiveTab(key);
+   $('forceToggles').hidden=key==='pos'||key==='vel';
   });
  }
+ for(const b of document.querySelectorAll('.series-btn'))b.addEventListener('click',()=>{
+  const visible=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',String(visible));charts.setSeriesVisible(b.dataset.series,visible);charts.draw();
+ });
+ const graphsSection=document.querySelector('.graphs-section');
+ function expandGraphs(on){
+  graphsSection.classList.toggle('expanded',on);document.body.classList.toggle('graphs-open',on);
+  $('btnExpand').setAttribute('aria-pressed',String(on));$('btnExpand').textContent=on?'✕ סגירה':'⛶ הגדלה';
+ }
+ $('btnExpand').addEventListener('click',()=>{expandGraphs(!graphsSection.classList.contains('expanded'));$('btnExpand').blur();});
  $('btnExportCSV').addEventListener('click',()=>{
   const url=URL.createObjectURL(new Blob(['﻿'+charts.exportCSV()],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
   a.href=url;a.download='atwood-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  });
  window.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&graphsSection.classList.contains('expanded')){expandGraphs(false);return;}
   if(e.target.closest('input,select,textarea,button,summary')||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
   if(e.code==='Space'){e.preventDefault();play(!running);}
   else if(e.code==='KeyR')$('btnReset').click();

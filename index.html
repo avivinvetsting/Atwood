@@ -37,8 +37,9 @@
 <div class="section-heading"><h2>התנועה לאורך הזמן</h2><span class="eyebrow">03 / משווים</span></div>
 <div class="graphs-header"><div class="graph-tabs" role="group" aria-label="סוג הגרף">
 <button id="tabAll" class="tab-btn active" aria-pressed="true">כל הגרפים</button><button id="tabPos" class="tab-btn" aria-pressed="false">גובה</button><button id="tabVel" class="tab-btn" aria-pressed="false">מהירות</button><button id="tabForce" class="tab-btn" aria-pressed="false">כוחות</button></div>
-<button id="btnExportCSV">ייצוא מדידות CSV ↓</button></div>
-<p class="hint" id="graphPlanNote">ציר הזמן נקבע מראש לפי תנאי הניסוי ונשאר קבוע.</p>
+<div class="graph-actions"><button id="btnExpand" aria-pressed="false" title="הגדלת הגרפים לכל החלון · רווח — הפעל/השהה · Esc — סגירה">⛶ הגדלה</button><button id="btnExportCSV">ייצוא CSV ↓</button></div></div>
+<div class="graph-subbar"><p class="hint" id="graphPlanNote">ציר הזמן נקבע מראש לפי תנאי הניסוי ונשאר קבוע.</p>
+<div id="forceToggles" class="series-toggles" role="group" aria-label="כוחות שמוצגים בגרף"><span>כוחות:</span><button class="series-btn" data-series="T" aria-pressed="true"><i style="--c:#397668"></i>T</button><button class="series-btn" data-series="N1" aria-pressed="true"><i style="--c:#75602e"></i>N₁</button><button class="series-btn" data-series="N2" aria-pressed="true"><i style="--c:#a05276"></i>N₂</button></div></div>
 <div class="graph-canvas-container"><canvas id="graphCanvas" role="img" aria-label="גרפי גובה, מהירות ומתיחות ונורמל של שני הגופים כתלות בזמן"></canvas></div>
 </section>
 <aside class="controls-sidebar" aria-label="הגדרות הניסוי">

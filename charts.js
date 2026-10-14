@@ -6,7 +6,7 @@ function niceStep(span,count){const raw=span/count,p=10**Math.floor(Math.log10(r
 function niceAxis(min,max,count=4){if(!(max>min))max=min+1;const step=niceStep(max-min,count);return {min:Math.floor(min/step+1e-9)*step,max:Math.ceil(max/step-1e-9)*step,step};}
 function formatTick(v,step){let d=0;while(d<4&&Math.abs(Math.round(step*10**d)-step*10**d)>1e-6)d++;return String(Number(v.toFixed(d)));}
 class AtwoodCharts{
- constructor(canvas,o={}){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.dataPoints=[];this.activeTab='all';this.theme=o.theme||'light';this.timeDomain={min:0,max:5};this.ranges=null;this.cursorIndex=null;this.resize();}
+ constructor(canvas,o={}){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.dataPoints=[];this.activeTab='all';this.theme=o.theme||'light';this.timeDomain={min:0,max:5};this.ranges=null;this.cursorIndex=null;this.hiddenSeries=new Set();this.resize();}
  setTheme(t){this.theme=t;this.draw();}
  resize(){const r=this.canvas.getBoundingClientRect(),d=typeof window==='undefined'?1:window.devicePixelRatio||1;this.width=r.width||600;this.height=r.height||510;this.canvas.width=this.width*d;this.canvas.height=this.height*d;this.ctx.setTransform(d,0,0,d,0,0);}
  setPlan(plan){this.timeDomain={min:0,max:plan.duration};this.ranges=plan.ranges;}
@@ -14,6 +14,8 @@ class AtwoodCharts{
  record(time,s){this.dataPoints.push({t:time,y1:s.y1,y2:s.y2,v1:s.v1,v2:s.v2,a1:s.a1??0,a2:s.a2??0,T:s.T,N1:s.N1,N2:s.N2??0,isSlack:s.isSlack,angle:s.pulleyAngle,stateType:s.stateType,state:s.stateDescription});}
  /* Replay: index of a recorded sample to highlight, or null to follow the latest sample. */
  setCursor(index){this.cursorIndex=index;}
+ /* Show or hide one plotted series (e.g. 'T', 'N1'); axes stay fixed. */
+ setSeriesVisible(key,visible){if(visible)this.hiddenSeries.delete(key);else this.hiddenSeries.add(key);}
  /* Index of the recorded sample closest to time t (samples are time-ordered). */
  indexAt(t){
    const d=this.dataPoints;if(!d.length)return null;
@@ -43,8 +45,9 @@ class AtwoodCharts{
      this.text(cfg.title,w-18,top+19,'#293e37','right',13);
      let lx=18;
      cfg.series.forEach(([k,label,color],i)=>{
-       this.line(lx,top+19,lx+13,top+19,color,2);
-       this.text(label,lx+18,top+19,color,'left',12);lx+=key==='force'?57:78;
+       const shown=!this.hiddenSeries.has(k),tint=shown?color:'#c9c6b8';
+       this.line(lx,top+19,lx+13,top+19,tint,2);
+       this.text(label,lx+18,top+19,tint,'left',12);lx+=key==='force'?57:78;
      });
      const x=52,y=top+42,pw=w-76,ph=slot-75;
      let minY=0,maxY=1;
@@ -66,6 +69,7 @@ class AtwoodCharts{
      c.save();c.beginPath();c.rect(x-4,y-4,pw+8,ph+8);c.clip();
      if(data.length>1){c.setLineDash([3,4]);this.line(sx(cursor.t),y,sx(cursor.t),y+ph,'#a7aa98');c.setLineDash([]);}
      cfg.series.forEach(([key,label,color],i)=>{
+       if(this.hiddenSeries.has(key))return;
        c.strokeStyle=color;c.lineWidth=2;c.setLineDash(i===1?[5,3]:i===2?[2,3]:[]);
        c.beginPath();data.forEach((p,j)=>{if(j)c.lineTo(sx(p.t),sy(p[key]));else c.moveTo(sx(p.t),sy(p[key]));});c.stroke();
        if(data.length){c.beginPath();c.arc(sx(cursor.t),sy(cursor[key]),3.5,0,Math.PI*2);c.fillStyle=color;c.fill();}
