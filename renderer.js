@@ -9,7 +9,8 @@ class AtwoodRenderer{
     this.canvas.width=this.width*dpr;this.canvas.height=this.height*dpr;this.ctx.setTransform(dpr,0,0,dpr,0,0);
     this.groundY=this.height-44;this.meterScale=(this.groundY-90)/this.sim.pulleyHeight;
     this.pulleyCenterX=this.width/2;this.pulleyCenterY=90;
-    this.pulleyRadiusPx=Math.min(34,Math.max(24,this.width*.045));
+    this.pulleyRadiusPx=Math.min(38,Math.max(24,this.width*.05));
+    this.blockW=Math.round(Math.min(54,Math.max(36,this.width*.075)));this.blockH=Math.round(this.blockW*.83);
   }
   meterToPxY(y){return this.groundY-y*this.meterScale;}
   text(text,x,y,color='#626d64',size=12,align='center'){
@@ -23,8 +24,8 @@ class AtwoodRenderer{
     this.line(x,y,x,end,color,2.5);c.fillStyle=color;c.beginPath();c.moveTo(x,end);c.lineTo(x-4,end+sign*7);c.lineTo(x+4,end+sign*7);c.closePath();c.fill();
     this.text(label,x,end-sign*12,color,11);
   }
-  drawFBD(body,anchor){
-    const s=this.sim,c=this.ctx,y=this.groundY/2,m=body===1?s.m1:s.m2,N=body===1?s.N1:s.N2;
+  drawFBD(body,anchor,s=this.sim){
+    const c=this.ctx,y=this.groundY/2,m=body===1?s.m1:s.m2,N=body===1?s.N1:s.N2;
     const max=Math.max(s.m1*s.g,s.m2*s.g,s.T,s.N1,s.N2,1),arrowLength=Math.min(65,(this.height-200)/2),scale=arrowLength/max;
     this.text('גוף '+body+' · כוחות',anchor,y-arrowLength-31,'#626d64',12);
     c.fillStyle=body===1?'#286354':'#ae543b';c.beginPath();c.arc(anchor,y,5,0,Math.PI*2);c.fill();
@@ -35,8 +36,8 @@ class AtwoodRenderer{
     this.text('mg = '+(m*s.g).toFixed(1)+' N',anchor,y+arrowLength+46,'#ac4837',12);
     this.text('N = '+N.toFixed(1)+' N',anchor,y+arrowLength+64,'#75602e',12);
   }
-  draw(){
-    const c=this.ctx,s=this.sim,w=this.width,h=this.height,cx=w/2,cy=this.pulleyCenterY,r=this.pulleyRadiusPx;
+  draw(state=this.sim){
+    const c=this.ctx,s=state,w=this.width,h=this.height,cx=w/2,cy=this.pulleyCenterY,r=this.pulleyRadiusPx,bw=this.blockW,bh=this.blockH;
     c.clearRect(0,0,w,h);c.fillStyle='#fffcf5';c.fillRect(0,0,w,h);
     for(let k=0;k<=this.sim.pulleyHeight;k+=Math.max(1,Math.ceil(this.sim.pulleyHeight/8))){
       const py=this.meterToPxY(k);this.line(0,py,w,py,'#eeeadd');
@@ -48,16 +49,16 @@ class AtwoodRenderer{
     this.line(cx-75,20,cx+75,20,'#a7aa98',4);this.line(cx,20,cx,cy,'#7f8876',5);
     // Rope endpoints attach to the upper face of the schematic blocks.
     for(const body of [1,2]){
-      const x=cx+(body===1?-r:r),bottom=this.meterToPxY(body===1?s.y1:s.y2),top=bottom-30;
+      const x=cx+(body===1?-r:r),bottom=this.meterToPxY(body===1?s.y1:s.y2),top=bottom-bh;
       c.strokeStyle=s.isSlack?'#ba7c38':'#58665c';c.lineWidth=2.5;c.beginPath();c.moveTo(x,cy);
       if(s.isSlack){
         const gap=Math.max(0,s.y1+s.y2-s.ropeSum),amp=Math.min(14,3+gap*8);
         for(let i=1;i<=36;i++){const t=i/36;c.lineTo(x+amp*Math.sin(t*Math.PI*6)*Math.sin(t*Math.PI),cy+(top-cy)*t);}
       }else c.lineTo(x,top);
       c.stroke();
-      c.fillStyle=body===1?'#286354':'#ae543b';c.beginPath();c.roundRect(x-18,top,36,30,5);c.fill();
-      this.text(body===1?'m₁':'m₂',x,top+9,'#fffaf0',12);
-      this.text((body===1?s.m1:s.m2).toFixed(1)+' kg',x,top+23,'#fffaf0',10);
+      c.fillStyle=body===1?'#286354':'#ae543b';c.beginPath();c.roundRect(x-bw/2,top,bw,bh,5);c.fill();
+      this.text(body===1?'m₁':'m₂',x,top+bh*.32,'#fffaf0',Math.round(bh*.4));
+      this.text((body===1?s.m1:s.m2).toFixed(1)+' kg',x,top+bh*.74,'#fffaf0',Math.round(bh*.32));
       if(bottom<this.groundY-23)this.text((body===1?s.y1:s.y2).toFixed(2)+' m',x,bottom+15,'#626d64',11);
     }
     c.fillStyle='#e4e2d3';c.strokeStyle='#6a7769';c.lineWidth=2;
@@ -65,7 +66,8 @@ class AtwoodRenderer{
     c.save();c.translate(cx,cy);c.rotate(s.pulleyAngle);for(let i=0;i<4;i++){this.line(0,0,r-6,0,'#8d9780',2);c.rotate(Math.PI/2);}c.restore();
     c.fillStyle='#58665c';c.beginPath();c.arc(cx,cy,5,0,Math.PI*2);c.fill();
     c.beginPath();c.arc(cx,cy,r,Math.PI,0);c.strokeStyle='#58665c';c.stroke();
-    if(this.showFBD){this.drawFBD(1,w*.18);this.drawFBD(2,w*.82);}
+    const fbdX=Math.max(w*.18,84);
+    if(this.showFBD){this.drawFBD(1,fbdX,s);this.drawFBD(2,w-fbdX,s);}
     this.text('גוף 1',cx-r,this.groundY+23,'#286354',11);
     this.text('גוף 2',cx+r,this.groundY+23,'#ae543b',11);
   }

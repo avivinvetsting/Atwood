@@ -32,7 +32,7 @@
   }
   // Round upward and leave a little stationary tail; do not change after play.
   const duration=settled?Math.max(2,Math.ceil((probe.time+.4)*2)/2):Math.ceil(horizon);
-  const pulleyHeight=Math.max(14,Math.ceil(maxHeight*1.8+2));
+  const pulleyHeight=Math.max(8,Math.ceil(maxHeight*1.25+2.5));
   const stringLength=2*pulleyHeight-probe.ropeSum;
   const range=ids=>{
    let min=Math.min(...ids.map(k=>bounds[k].min)),max=Math.max(...ids.map(k=>bounds[k].max));

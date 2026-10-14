@@ -28,6 +28,8 @@
 <div class="time-readout"><span>זמן</span><bdi id="valTime">0.00 s</bdi></div></div>
 <div class="canvas-container"><canvas id="simCanvas" role="img" aria-label="מכונת אטווד: גוף 1 משמאל, גוף 2 מימין, חוט וגלגלת. גובה נמדד מתחתית הגוף עד הקרקע."></canvas>
 <span class="direction-note">↑ הכיוון החיובי</span></div>
+<div class="replay-bar"><label for="replaySlider">צפייה חוזרת</label><input id="replaySlider" type="range" min="0" max="0" step="any" value="0" disabled aria-describedby="replayHint">
+<button id="btnLive" hidden>חזרה לסוף ⇥</button><span id="replayHint" class="replay-hint">בהשהיה: גוררים כדי לראות כל רגע במדידה</span></div>
 <div id="valStateBadge" class="status-badge" role="status">חוט מתוח</div>
 <div class="learning-note"><span class="eyebrow">מה רואים כאן?</span><p id="stateExplanation"></p></div>
 </section>

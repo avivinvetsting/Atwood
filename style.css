@@ -100,3 +100,12 @@
 @media(max-width:760px){
   .measurements-section{order:4}
 }
+
+/* Replay scrubber between the machine and its status line. */
+.replay-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface);border:1px solid var(--line);border-bottom:0;font-size:12px;color:var(--muted)}
+.replay-bar label{flex-shrink:0}
+.replay-bar input[type=range]{flex:1;min-width:80px}
+.replay-bar input[type=range]:disabled{opacity:.45;cursor:default}
+.replay-bar button{font-size:12px;min-height:30px;padding:3px 10px;flex-shrink:0}
+.replay-hint{flex-shrink:0}
+@media(max-width:1150px){.replay-hint{display:none}}

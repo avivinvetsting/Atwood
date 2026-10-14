@@ -39,3 +39,12 @@ planning.js נוסף למקור ולגרסה העצמאית. משך המדידה
 
 ## הצעד הבא
 לקבל משוב מהמורה לאחר שימוש בכיתה. לפני שינוי עתידי לקרוא את REVIEW.md ואת היומן, לשנות את קבצי המקור ולבנות מחדש את atwood-lab.html.
+
+## [Antigravity] שיפורי נראות — ענף ui-improvements — 2026-10-14
+- [Antigravity] git אותחל (לא היה מאגר). קומיט בסיס על main: 93667ba. העבודה בענף ui-improvements.
+- [Antigravity] מכונה גדולה יותר: planning.js — גובה גלגלת max(8, ⌈1.25·שיא+2.5⌉) במקום max(14, ⌈1.8·שיא+2⌉). בניסוי הקלאסי: 12 m במקום 16. renderer.js — גופים 36–54 px לפי רוחב (במקום 36×30 קבוע), גלגלת עד 38 px. תרשימי כוחות לפחות 84 px מהשוליים, ללא חפיפה לסרגל בטלפון.
+- [Antigravity] שנתות עגולות: charts.js — niceAxis/niceStep (צעדים 1/2/2.5/5×10ⁿ), תוויות ללא אפסים מיותרים. טווחי התחזית (ranges/timeDomain) לא שונו.
+- [Antigravity] צפייה חוזרת: סליידר מתחת לקנבס (index.html/style.css/app.js). בהשהיה מציג דגימה מוקלטת: מכונה, טבלה, תג מצב, הסבר וסמן בגרף. לא מוסיף דגימות. "צעד" או "הפעל" ממשיכים מהסוף; "איפוס" מנקה. דגימות שומרות גם זווית גלגלת ומצב. renderer.draw(state) מקבל מצב אופציונלי.
+- [Antigravity] בדיקות: חדש — tests/replay_browser_test.js; ui_render_test.js — 3 בדיקות חדשות, ובדיקת הגוף על הקרקע מותאמת לגודל משתנה, עם אותה בדיקת מגע. כל 8 קבצי הבדיקה עברו: 7 פיזיקה, 8 תחזית, 13 רגרסיה, 7 קנבס/CSV, 11 דפדפן, צירים קבועים, 8 פריסות ותנועה, צפייה חוזרת. atwood-lab.html נבנה מחדש.
+- [Antigravity] ראיות: verification/replay-scrub.png, verification/replay-results.json, verification/mobile-ui-improvements.png, verification/fixed-axes-peak.png.
+- [Antigravity] לא בוצע (ממתין להחלטה): הצעות 3–6 ו־8–11 מהסקירה. לא נבדק בטלפון אמיתי או במקרן.
