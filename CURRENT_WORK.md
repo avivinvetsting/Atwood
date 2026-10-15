@@ -55,3 +55,9 @@ planning.js נוסף למקור ולגרסה העצמאית. משך המדידה
 - [Antigravity] התאמות רספונסיביות: תווית הייצוא קוצרה ל-"ייצוא CSV ↓", וכפתורי השליטה בכוחות צומצמו לגדלים קומפקטיים כך שאינם גורמים לשבירת שורה במסכים קטנים/חלונות צרים (כגון 900x720).
 - [Antigravity] בדיקות: נוסף tests/graph_controls_browser_test.js; עודכן tests/ui_render_test.js לבדיקת כיבוי כוחות. כל 9 קובצי הבדיקות (כולל בדיקות דפדפן, רספונסיביות, פיזיקה, תנועה, רגרסיות וצפייה חוזרת) עברו בהצלחה מלאה. הקובץ העצמאי atwood-lab.html נבנה מחדש.
 - [Antigravity] ראיות: verification/force-toggles.png, verification/graphs-expanded.png, verification/graph-controls-results.json.
+
+## [Antigravity] העלאה ל-GitHub והגדרת מאגר עצמאי — 2026-10-15
+- [Antigravity] כל השיפורים מענף ui-improvements מוזגו לענף main (fast-forward).
+- [Antigravity] נוצר קובץ README.md מקיף בעברית עם תיאור מלא של הפרויקט, המודל הפיזיקלי, תכונות המעבדה, מבנה הקבצים והוראות הרצה ובדיקה.
+- [Antigravity] הוגדר remote origin עבור https://github.com/avivinvetsting/Atwood.git.
+- [Antigravity] בוצע push מוצלח של ענף main למאגר המרוחק ב-GitHub.
